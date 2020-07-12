@@ -1,11 +1,23 @@
 // Require Implementaciones de librerias para que funcione algo
 var express = require('express');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 
 
 
 // inicializar Variables 
 var app = express();
+
+// bodyParser
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+
+// importar rutas
+var appRoutes = require('./routers/app.routes');
+var usuarioRoutes = require('./routers/usuario.routes');
+var loginRoutes = require('./routers/login.routes');
 
 // Conexion a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) => {
@@ -14,16 +26,11 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) =
 
 })
 
-// rutas 
-// req
-// res = es la respuesta para el servidor
-// next es solo para lo midelware que hace que contiue con la siguiente intruccion
-app.get('/', (req, res, next) => {
-    res.status(200).json({
-        ok: true,
-        mensaje: 'Peticion realizada correctamente'
-    })
-})
+// rutas
+app.use('/usuario', usuarioRoutes);
+app.use('/login', loginRoutes);
+app.use('/', appRoutes);
+
 
 // Escuchar peticiones de express
 app.listen(3000, () => {
